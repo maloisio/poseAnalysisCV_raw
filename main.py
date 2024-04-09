@@ -3,13 +3,13 @@ import numpy as np
 import cv2 as cv
 import os
 
+
 diretorio_atual = os.path.dirname(os.path.realpath(__file__))
 caminho_modelo = os.path.join(diretorio_atual, 'models', 'lite-model_movenet_singlepose_lightning_3.tflite')
 interpreter = tf.lite.Interpreter(model_path=caminho_modelo)
 
 interpreter.allocate_tensors()
-
-cap = cv.VideoCapture("exemplo.mp4") #coloque aqui o nome do video
+cap = cv.VideoCapture("video_concatenado.mp4") #coloque aqui o nome do video
 
 EDGES = {
     (0, 1): 'm',
@@ -54,7 +54,8 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
         if (c1 > confidence_threshold) & (c2 > confidence_threshold):
             cv.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 2)
             cv.line(frame2, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 2)
-
+contagem_de_vezes = 0
+limitador_de_frames = int(input("Defina limitador de quantidade total de frames:"))
 while cap.isOpened():
     ret, frame = cap.read()
     frame = cv.resize(frame, [480, 480], interpolation=cv.INTER_BITS)
@@ -76,8 +77,27 @@ while cap.isOpened():
     interpreter.set_tensor(input_details[0]['index'], np.array(input_image))
     interpreter.invoke()
     keypoints_with_scores = interpreter.get_tensor(output_details[0]['index'])
-    print(keypoints_with_scores)
+    if contagem_de_vezes%10 == 0: #A cada 10 frames me printa a posição de cada coisa
+        for linha in keypoints_with_scores[0]:
+            print("ombro esquerdo",[linha[5]])
+            print("ombro direito",[linha[6]])
+            print("cotovelo esquerdo",[linha[7]])
+            print("cotovelo direito",[linha[8]])
+            print("mao esquerdo",[linha[9]])
+            print("mao direito",[linha[10]])
+            print("quadril esquerdo",[linha[11]])
+            print("quadril direito",[linha[12]])
+            print("joelho esquerdo",[linha[13]])
+            print("joelho direito",[linha[14]])
+            print("pe esquerdo",[linha[15]])
+            print("pe direito",[linha[16]])
 
+        
+    contagem_de_vezes = contagem_de_vezes + 1
+    if contagem_de_vezes > limitador_de_frames: #limitador de quantos frames do video ver
+        print("Parar e sair")
+        exit()
+    print(contagem_de_vezes)
     #desenha o frame com os pontos
     draw_connections(frame, keypoints_with_scores, EDGES, 0.2)
     draw_keypoints(frame, keypoints_with_scores, 0.2)
@@ -88,6 +108,6 @@ while cap.isOpened():
     cv.imshow("tela", frame)
     if cv.waitKey(10) & 0xFF == ord('q'):
         break
-
+print(contagem_de_vezes)
 cap.release()
 cv.destroyWindow()
