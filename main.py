@@ -32,6 +32,35 @@ EDGES = {
     (14, 16): 'c'
 }
 
+def mostra_posicoes(keypoints):
+    for linha in keypoints_with_scores[0]:
+            print("olhos",[linha[0]])
+            print("ombro esquerdo",[linha[5]])
+            print("ombro direito",[linha[6]])
+            print("cotovelo esquerdo",[linha[7]])
+            print("cotovelo direito",[linha[8]])
+            print("mao esquerdo",[linha[9]])
+            print("mao direito",[linha[10]])
+            print("quadril esquerdo",[linha[11]])
+            print("quadril direito",[linha[12]])
+            print("joelho esquerdo",[linha[13]])
+            print("joelho direito",[linha[14]])
+            print("pe esquerdo",[linha[15]])
+            print("pe direito",[linha[16]])
+
+
+def check_flexao(keypoints, tempo, contflec,contelap):
+        #print(tempo,contelap)
+        if (tempo > contelap + 20):
+            for linha in keypoints_with_scores[0]:
+                if(linha[5][0] > linha[7][0]) and (linha[6][0] > linha[8][0]) and (linha[0][0] > linha[5][0]): #talvez uma lógica para ver se está tendo flexão
+                    print("flexionado")
+                    contflec = contflec + 1
+                    contelap = tempo
+                    
+        vetor_de_resposta = [contflec,contelap]
+        
+        return vetor_de_resposta
 def draw_keypoints(frame, keypoints, confidence_threshold):
     y, x, c = frame.shape
     shaped = np.squeeze(np.multiply(keypoints, [y, x, 1]))
@@ -56,6 +85,8 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
             cv.line(frame2, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 2)
 contagem_de_vezes = 0
 limitador_de_frames = int(input("Defina limitador de quantidade total de frames:"))
+contador_De_flexoes = contagem_de_vezes
+contador_de_tempo_elapsado = contagem_de_vezes
 while cap.isOpened():
     ret, frame = cap.read()
     frame = cv.resize(frame, [480, 480], interpolation=cv.INTER_BITS)
@@ -78,26 +109,16 @@ while cap.isOpened():
     interpreter.invoke()
     keypoints_with_scores = interpreter.get_tensor(output_details[0]['index'])
     if contagem_de_vezes%10 == 0: #A cada 10 frames me printa a posição de cada coisa
-        for linha in keypoints_with_scores[0]:
-            print("ombro esquerdo",[linha[5]])
-            print("ombro direito",[linha[6]])
-            print("cotovelo esquerdo",[linha[7]])
-            print("cotovelo direito",[linha[8]])
-            print("mao esquerdo",[linha[9]])
-            print("mao direito",[linha[10]])
-            print("quadril esquerdo",[linha[11]])
-            print("quadril direito",[linha[12]])
-            print("joelho esquerdo",[linha[13]])
-            print("joelho direito",[linha[14]])
-            print("pe esquerdo",[linha[15]])
-            print("pe direito",[linha[16]])
-
-        
+        mostra_posicoes(keypoints_with_scores)
+            
+    res = check_flexao(keypoints_with_scores, contagem_de_vezes, contador_De_flexoes, contador_de_tempo_elapsado)   
+    contador_De_flexoes = res[0]
+    contador_de_tempo_elapsado = res[1]
     contagem_de_vezes = contagem_de_vezes + 1
     if contagem_de_vezes > limitador_de_frames: #limitador de quantos frames do video ver
         print("Parar e sair")
         exit()
-    print(contagem_de_vezes)
+    # print(contagem_de_vezes)
     #desenha o frame com os pontos
     draw_connections(frame, keypoints_with_scores, EDGES, 0.2)
     draw_keypoints(frame, keypoints_with_scores, 0.2)
@@ -106,8 +127,10 @@ while cap.isOpened():
     frame2 = cv.resize(frame2, [480, 360], interpolation=cv.INTER_BITS)
     cv.imshow("tela2", frame2)
     cv.imshow("tela", frame)
+    # print("contador de flexoes",contador_De_flexoes)
     if cv.waitKey(10) & 0xFF == ord('q'):
         break
 print(contagem_de_vezes)
+print(contador_De_flexoes)
 cap.release()
 cv.destroyWindow()
