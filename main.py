@@ -37,7 +37,7 @@ class Individuo:
         self.genero = genero
         self.estado = False
         self.reto = False
-    def verificar_estado(keypoints):
+    def verificar_estado(self,keypoints):
         self.estado = True
 
 
