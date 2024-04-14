@@ -5,3 +5,5 @@ Dado o que eu percebi, o primeiro valor das linhas é relativo ao y, quanto meno
 Então o segundo é relativo ao x e quanto maior, mais para a esquerda
 linha[5][0] é o y do ombro
 Esta desatualizado
+Dia 14/04
+Acredito que esteja funcionando a implementação de ferificar se Esta reto ou não e a flexão está melhor implementada, embora ainda não consegui fazer verificar pela mudança de estados, extendido, semi extendido e flexionado
