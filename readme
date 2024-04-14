@@ -1,5 +1,7 @@
+Esta desatualizado
 Por enquanto só estou estudando como o código funciona e o que pode ser feito para o meu problema
 Para resolver o problema da flexão eu irei fazer o seguinte, caso ocorra uma flexão total de cotovelo, que para flexão é o ombro passar do cotovelo, eu conto um movimento, e eu faço um delay de tempo minimo e um deslocamento minimo para
 Dado o que eu percebi, o primeiro valor das linhas é relativo ao y, quanto menor o número mais alto está a coisa
 Então o segundo é relativo ao x e quanto maior, mais para a esquerda
 linha[5][0] é o y do ombro
+Esta desatualizado
