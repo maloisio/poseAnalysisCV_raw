@@ -104,6 +104,10 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
         if (c1 > confidence_threshold) & (c2 > confidence_threshold):
             cv.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 2)
             cv.line(frame2, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 2)
+
+def verifica_estado(keypoints):
+    return 1
+
 contagem_de_vezes = 0
 limitador_de_frames = int(input("Defina limitador de quantidade total de frames:"))
 contador_De_flexoes = contagem_de_vezes
