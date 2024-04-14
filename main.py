@@ -32,6 +32,15 @@ EDGES = {
     (14, 16): 'c'
 }
 
+class Individuo:
+    def  __init__(self, genero):
+        self.genero = genero
+        self.estado = False
+        self.reto = False
+    def verificar_estado(keypoints):
+        self.estado = True
+
+
 def mostra_posicoes(keypoints):
     for linha in keypoints_with_scores[0]:
             print("olhos",[linha[0]])
