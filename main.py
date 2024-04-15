@@ -37,10 +37,30 @@ class Individuo:
         self.genero = genero
         self.estado = False
         self.reto = False
+        self.estado_anterior = 0
+        self.contador_de_flexoes_idividual = 0
+        self.estado_pre_anterior = 0
+    
     def verificar_estado(self,keypoints):
-        self.estado = True
+        if(self.estado != 0 or self.estado != self.estado_anterior):
+            self.estado_pre_anterior = self.estado_anterior
+            self.estado_anterior = self.estado
+        for linha in keypoints_with_scores[0]:
+            if(not(linha[12][0] > linha[8][0]) and (linha[11][0] > linha[6][0])):
+                self.estado = str("estendido")
+            else:
+                self.estado = str("flexionado")
 
-
+    def confere_mov(self, tempo, contflec,contelap):
+        if (tempo > contelap + 20):
+            if(self.estado_pre_anterior == "estendido" and self.estado_anterior == "flexionado" and self.estado == "estendido"):
+                    self.contador_de_flexoes_idividual = self.contador_de_flexoes_idividual + 1
+                    print("flexao")
+                    contflec = contflec + 1
+                    contelap = tempo
+        vetor_de_resposta = [contflec,contelap]
+        return vetor_de_resposta
+    
 def mostra_posicoes(keypoints):
     for linha in keypoints_with_scores[0]:
             print("olhos",[linha[0]])
@@ -116,7 +136,7 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
 
 def verifica_estado(keypoints):
     return 1
-
+Pessoa = Individuo("Masculino")
 contagem_de_vezes = 0
 limitador_de_frames = int(input("Defina limitador de quantidade total de frames:"))
 contador_De_flexoes = contagem_de_vezes
@@ -146,15 +166,16 @@ while cap.isOpened():
     # if contagem_de_vezes%10 == 0: #A cada 10 frames me printa a posição de cada coisa
     #     mostra_posicoes(keypoints_with_scores)
             
-    if(verificar_reto(keypoints_with_scores)):
-        print("reto")
-        res = check_flexao(keypoints_with_scores, contagem_de_vezes, contador_De_flexoes, contador_de_tempo_elapsado)   
-    else:
-        print("Não está reto")
+    # if(verificar_reto(keypoints_with_scores)):
+    #     res = check_flexao(keypoints_with_scores, contagem_de_vezes, contador_De_flexoes, contador_de_tempo_elapsado)   
     
+    # contador_De_flexoes = res[0]
+    # contador_de_tempo_elapsado = res[1]
+    contagem_de_vezes = contagem_de_vezes + 1
+    Pessoa.verificar_estado(keypoints_with_scores)
+    res =  Pessoa.confere_mov(contagem_de_vezes, contador_De_flexoes, contador_de_tempo_elapsado)
     contador_De_flexoes = res[0]
     contador_de_tempo_elapsado = res[1]
-    contagem_de_vezes = contagem_de_vezes + 1
     if contagem_de_vezes > limitador_de_frames: #limitador de quantos frames do video ver
         print("Parar e sair")
         exit()
